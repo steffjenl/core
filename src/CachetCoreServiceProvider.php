@@ -4,6 +4,7 @@ namespace Cachet;
 
 use BladeUI\Icons\Factory;
 use Cachet\Listeners\SendWebhookListener;
+use Cachet\Listeners\UpdateListener;
 use Cachet\Listeners\WebhookCallEventListener;
 use Cachet\Models\Incident;
 use Cachet\Models\Schedule;
@@ -75,8 +76,12 @@ class CachetCoreServiceProvider extends ServiceProvider
             'Cachet\Events\Components\*',
             'Cachet\Events\Subscribers\*',
             'Cachet\Events\Metrics\*',
+            'Cachet\Events\Updates\*',
         ], SendWebhookListener::class);
         Event::listen([WebhookCallSucceededEvent::class, WebhookCallFailedEvent::class], WebhookCallEventListener::class);
+        Event::listen([
+            'Cachet\Events\Updates\*',
+        ], UpdateListener::class);
 
         Http::globalRequestMiddleware(fn ($request) => $request->withHeader(
             'User-Agent', Cachet::USER_AGENT

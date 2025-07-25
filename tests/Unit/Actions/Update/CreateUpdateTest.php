@@ -6,6 +6,11 @@ use Cachet\Data\Requests\ScheduleUpdate\CreateScheduleUpdateRequestData;
 use Cachet\Enums\IncidentStatusEnum;
 use Cachet\Models\Incident;
 use Cachet\Models\Schedule;
+use Illuminate\Support\Facades\Event;
+
+beforeEach(function () {
+    Event::fake();
+});
 
 it('can create an incident update', function () {
     $incident = Incident::factory()->create();
@@ -19,6 +24,8 @@ it('can create an incident update', function () {
 
     expect($incidentUpdate)
         ->message->toBe($data->message);
+
+    Event::assertDispatched(\Cachet\Events\Updates\UpdateCreated::class, fn ($event) => $event->update->is($incidentUpdate));
 });
 
 it('an incident\'s computed latest status equals the new status', function () {
@@ -37,6 +44,8 @@ it('an incident\'s computed latest status equals the new status', function () {
         ->message->toBe($data->message)
         ->and($incident->fresh())
         ->latestStatus->toEqual(IncidentStatusEnum::identified);
+
+    Event::assertDispatched(\Cachet\Events\Updates\UpdateCreated::class, fn ($event) => $event->update->is($incidentUpdate));
 });
 
 it('can create a schedule update', function () {
@@ -51,4 +60,6 @@ it('can create a schedule update', function () {
 
     expect($incidentUpdate)
         ->message->toBe($data->message);
+
+    Event::assertDispatched(\Cachet\Events\Updates\UpdateCreated::class, fn ($event) => $event->update->is($incidentUpdate));
 });

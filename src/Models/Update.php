@@ -4,6 +4,9 @@ namespace Cachet\Models;
 
 use Cachet\Database\Factories\UpdateFactory;
 use Cachet\Enums\IncidentStatusEnum;
+use Cachet\Events\Updates\UpdateCreated;
+use Cachet\Events\Updates\UpdateDeleted;
+use Cachet\Events\Updates\UpdateUpdated;
 use Carbon\Carbon;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -44,6 +47,12 @@ class Update extends Model
         'status',
         'message',
         'user_id',
+    ];
+
+    protected $dispatchesEvents = [
+        'created' => UpdateCreated::class,
+        'deleted' => UpdateDeleted::class,
+        'updated' => UpdateUpdated::class,
     ];
 
     /**
